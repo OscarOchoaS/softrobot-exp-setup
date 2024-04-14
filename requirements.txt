@@ -1,0 +1,4 @@
+depthai==2.25.0.0
+keyboard==0.13.5
+nidaqmx==0.9.0
+pyserial==3.5
