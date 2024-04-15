@@ -18,6 +18,7 @@ To use this project, ensure you have the required packages installed. You can fi
 
 ```bash
 pip install -r requirements.txt
+```
 
 ## Usage
 
