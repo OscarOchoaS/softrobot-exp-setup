@@ -23,7 +23,7 @@ pipeline = camera.init_camera()        #Initialize camera
 
 # # # # #
 # Experiment info               
-id = 'Test_AUX10'               # Experiment name
+id = 'HEX10'               # Experiment name
 goal_pressure = 45              # Goal pressure in MPa
 
 date = time.strftime("%d-%m-%y")
