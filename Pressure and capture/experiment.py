@@ -48,9 +48,9 @@ duty_cycle = 0.1
 pwm_thread = threading.Thread(target=pwm_airpump, args=(duty_cycle, device_name, channel_pump))
 serial_thread = threading.Thread(target=serial_read, args=(serial_port, ))
 camera_thread = threading.Thread(target=capture_frame, args=(video_file_path, pipeline,))
+time.sleep(1)
 camera_thread.start()
 serial_thread.start()
-
 
 # Open valve lock
 digital_output(device_name, channel_lock, True)
@@ -62,7 +62,6 @@ time_list = []               # List to store time
 force_list = []              # List to store force
 start_time = time.time()     # Get the start time
 avg_pressure = 0             # Initializa pressure variable
-
 
 while True:         
 
@@ -90,6 +89,7 @@ while True:
 
 # Turn on the valve again
 digital_output(device_name, channel_valve, True)
+time.sleep(0.5)
 camera_stop_event.set()
 
 # join threads
