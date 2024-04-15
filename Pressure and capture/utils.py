@@ -24,15 +24,16 @@ def export_csv(csv_file_path, time_list, pressure_list, force_list):
 
 # Create folders
 def create_folder(id, date):
-    folder_name = f"{id}_{date}"
+    i = 1
+    folder_name = f"{id}_{i}_{date}"
     try:
         os.makedirs(folder_name)
         print(f"Folder '{folder_name}' created successfully.")
         return folder_name
     except FileExistsError: # If the folder already exists
-        i = 1
+        
         while True:
-            folder_name = f"{id}_{i}_test_{date}"
+            folder_name = f"{id}_{i}_{date}"
             if not os.path.exists(folder_name):
                 os.makedirs(folder_name)
                 print(f"Folder '{folder_name}' created successfully.")

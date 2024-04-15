@@ -17,7 +17,7 @@ time.sleep(1)
 
 # # # # #
 # Experiment info               
-id = 'name_sample'               # Experiment name
+id = 'REC10_1'               # Experiment name
 goal_pressure = 50              # Goal pressure in MPa
 
 date = time.strftime("%d-%m-%y")
