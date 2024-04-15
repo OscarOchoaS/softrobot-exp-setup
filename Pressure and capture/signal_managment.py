@@ -12,6 +12,7 @@ import time
 
 serial_data_queue = queue.Queue()
 pwm_sw_event = threading.Event()
+pwm_pause_event = threading.Event()
 serial_sw_event = threading.Event()
 
 # Analog input from pressure sensor
@@ -45,8 +46,10 @@ def serial_read(port):
             line = ser.readline().decode().strip()
             serial_data_queue.put(line)  # Put received data into queue
     except PermissionError as e:
+        # If an Permission Error ocurrs 
         print(f"Permission error: {e}")
     except Exception as e:
+        # If an Error ocurrs in the thread generation
         print(f"Error reading from serial port: {e}")
     finally:
         try:
@@ -57,6 +60,14 @@ def serial_read(port):
 # Contrl the air pump with PWM
 def pwm_airpump(device_name, channel_pump, duty_cycle):
     try:
+
+        # Check if the pause event is set
+        if pwm_pause_event.is_set():
+            # Pause for a second
+            time.sleep(2)
+            # Clear the pause event to continue
+            pwm_pause_event.clear()
+
         while not pwm_sw_event.is_set(): 
             time_total = 0.01               # Total time of work 10ms
             t1 = duty_cycle * time_total    # Time ON
@@ -65,5 +76,7 @@ def pwm_airpump(device_name, channel_pump, duty_cycle):
             time.sleep(t1)
             digital_output(device_name, channel_pump, False)
             time.sleep(t2)
+
     except Exception as e:
-        print(f"Error in pwm_airpump thread: {e}")
+        # If an Error ocurrs in the thread generation
+        print(f"Error in pwm_airpump thread: {e}")  

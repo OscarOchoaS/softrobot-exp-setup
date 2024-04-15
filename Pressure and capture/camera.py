@@ -45,4 +45,5 @@ def capture_frame(video_file_path, pipeline):
                 with open(video_file_path, 'ab') as videoFile:
                     h265Packet.getData().tofile(videoFile)
     except Exception as e:
+        # If an Error ocurrs in the thread generation
         print(f"Error in capture_frame thread: {e}")

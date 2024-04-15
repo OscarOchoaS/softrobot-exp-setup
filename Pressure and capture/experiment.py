@@ -1,5 +1,5 @@
-# Soft Robot data adquisition and capture
-# # Main: Experiment
+# # Soft Robot data adquisition and capture
+# Main: Experiment
 
 # By: Oscar Ochoa 
 # March 2024
@@ -14,6 +14,7 @@ import exports
 
 # Threads queues and events
 pwm_sw_event = threading.Event()
+pwm_pause_event = threading.Event()
 serial_sw_event = threading.Event()
 camera_stop_event = threading.Event()
 serial_data_queue = queue.Queue()
@@ -39,6 +40,7 @@ channel_valve = "port1/line1"
 channel_lock = "port1/line2" 
 serial_port = "COM3"
 num_samples = 5                 # From pressure sensor (average will be used)
+pressure_increment = 5          # Mpa pressure increments
 
 # Open valve before recording (release prexisting pressure)
 signal_managment.digital_output(device_name, channel_valve, True)
@@ -78,6 +80,13 @@ while True:
     time_list.append(elapsed_time)
     pressure_list.append(pressure)
     force_list.append(force)
+
+    if (pressure >= pressure_increment) and (pressure_increment != goal_pressure):
+        signal_managment.digital_output(device_name, channel_lock, False)
+        pwm_pause_event.set()            # Pause PWM signal for a second
+        time.sleep(2)                   
+        signal_managment.digital_output(device_name, channel_lock, True)    
+        pressure_increment = pressure_increment + 5
 
     if pressure >= goal_pressure:
 
