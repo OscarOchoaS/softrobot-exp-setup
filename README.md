@@ -38,4 +38,4 @@ Contributions to this project are welcome! If you have ideas for improvements or
 
 ## License
 
-This project is licensed under the GNU GENERAL PUBLIC LICENSE License.
+This project is licensed under the GNU GENERAL PUBLIC LICENSE.
