@@ -24,7 +24,7 @@ def export_csv(csv_file_path, time_list, pressure_list, force_list):
 
 # Create folders
 def create_folder(id, date):
-    folder_name = f"{id}_test_{date}"
+    folder_name = f"{id}_{date}"
     try:
         os.makedirs(folder_name)
         print(f"Folder '{folder_name}' created successfully.")

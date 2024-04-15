@@ -1,5 +1,5 @@
 # # Soft Robot data adquisition and capture # #
-# DAQ.py
+# signal_managment.py
 
 # By: Oscar Ochoa 
 # April 2024
@@ -9,6 +9,7 @@ import threading
 import queue
 import serial
 import time
+import sys
 
 serial_data_queue = queue.Queue()
 pwm_sw_event = threading.Event()
@@ -40,25 +41,27 @@ def digital_output(device_name, channel, io):
 
 # Read serial port
 def serial_read(port):
+    ser = None  # Initialize serial object outside the try block
     try:
         ser = serial.Serial(port, 9600)
         while not serial_sw_event.is_set():
             line = ser.readline().decode().strip()
             serial_data_queue.put(line)  # Put received data into queue
     except PermissionError as e:
-        # If an Permission Error ocurrs 
+        # If a Permission Error occurs
         print(f"Permission error: {e}")
+    except serial.SerialException as e:
+        # If a Serial Exception occurs (e.g., device not found)
+        print(f"Serial error: {e}")
     except Exception as e:
-        # If an Error ocurrs in the thread generation
+        # If any other unexpected error occurs
         print(f"Error reading from serial port: {e}")
     finally:
-        try:
+        if ser is not None:
             ser.close()  # Close the serial port when the loop exits
-        except NameError:  # Handle the case where 'ser' is not defined
-            pass
 
 # Contrl the air pump with PWM
-def pwm_airpump(device_name, channel_pump, duty_cycle):
+def pwm_airpump(duty_cycle, device_name, channel_pump):
     try:
 
         # Check if the pause event is set
@@ -69,7 +72,7 @@ def pwm_airpump(device_name, channel_pump, duty_cycle):
             pwm_pause_event.clear()
 
         while not pwm_sw_event.is_set(): 
-            time_total = 0.01               # Total time of work 10ms
+            time_total = 0.015               # Total time of work 10ms
             t1 = duty_cycle * time_total    # Time ON
             t2 = time_total - t1            # Time OFF
             digital_output(device_name, channel_pump, True)
