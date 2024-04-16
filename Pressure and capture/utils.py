@@ -29,7 +29,7 @@ def create_folder(id, date):
     try:
         os.makedirs(folder_name)
         print(f"Folder '{folder_name}' created successfully.")
-        return folder_name
+        return folder_name, i
     except FileExistsError: # If the folder already exists
         
         while True:
@@ -37,5 +37,5 @@ def create_folder(id, date):
             if not os.path.exists(folder_name):
                 os.makedirs(folder_name)
                 print(f"Folder '{folder_name}' created successfully.")
-                return folder_name
+                return folder_name, i
             i += 1

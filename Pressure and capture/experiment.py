@@ -7,7 +7,6 @@
 import time
 import os
 import threading
-import queue
 import camera
 import signal_managment
 import utils
@@ -17,14 +16,14 @@ time.sleep(1)
 
 # # # # #
 # Experiment info               
-id = 'REC10_1'               # Experiment name
-goal_pressure = 50              # Goal pressure in MPa
+id = 'test_name'               # Experiment name
+goal_pressure = 45              # Goal pressure in MPa
 
 date = time.strftime("%d-%m-%y")
-folder_name = utils.create_folder(id, date)
+[folder_name, i] = utils.create_folder(id, date)
 # Update file paths to include folder name
-video_file_path = os.path.join(folder_name, f'video_{id}_{date}.h265')
-csv_file_path = os.path.join(folder_name, f'data_{id}_{date}.csv')
+video_file_path = os.path.join(folder_name, f'video_{id}_{i}_{date}.h265')
+csv_file_path = os.path.join(folder_name, f'data_{id}_{i}_{date}.csv')
 
 # Device info
 device_name = "Dev2"
@@ -37,14 +36,14 @@ num_samples = 5                 # From pressure sensor (average will be used)
 pressure_increment = 5          # Mpa pressure increments
 
 # Define threads
-duty_cycle = 0.03
+duty_cycle = 0.04
 pwm_thread = threading.Thread(target=signal_managment.pwm_airpump, args=(duty_cycle, device_name, channel_pump))
 serial_thread = threading.Thread(target=signal_managment.serial_read, args=(serial_port, ))
 camera_thread = threading.Thread(target=camera.capture_frame, args=(video_file_path, pipeline,))
 
 camera_thread.start()
 serial_thread.start()
-time.sleep(2)
+time.sleep(4)
 
 # Open valve before recording (release prexisting pressure)
 signal_managment.digital_output(device_name, channel_valve, True)
