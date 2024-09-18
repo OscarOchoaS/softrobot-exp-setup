@@ -1,8 +1,8 @@
 # # Soft Robot data adquisition and capture # #
 # signal_managment.py
 
-# By: Oscar Ochoa 
-# April 2024
+# By: Oscar Ochoa and Enrico Mendez
+# September 2024
 
 import nidaqmx
 import threading
@@ -18,6 +18,15 @@ serial_sw_event = threading.Event()
 
 # Analog input from pressure sensor
 def pressure_measurement(device_name, channel, num_samples):
+    """
+    Measure the pressure using a voltage signal from a specified device and channel.
+    Parameters:
+    - device_name (str): The name of the device.
+    - channel (str): The channel of the device to measure the voltage signal from.
+    - num_samples (int): The number of samples to acquire.
+    Returns:
+    - pressure (float): The calculated pressure value.
+    """
     voltage_range = 5.0   # Voltage range
     sample_rate = 1000.0  # Desired sample rate in Hz
     
@@ -29,18 +38,44 @@ def pressure_measurement(device_name, channel, num_samples):
         task.timing.cfg_samp_clk_timing(rate=sample_rate, samps_per_chan=num_samples)
         voltage_data = task.read(number_of_samples_per_channel=num_samples)
 
-    pressure_data = [((voltage - 0.5) * 100.0 / 4.0 + 35.4) * 1.08 for voltage in voltage_data]
+    # Equation obtained from datasheet
+    pressure_data = [((voltage - 0.5) / 4.0)for voltage in voltage_data]
     pressure = sum(pressure_data)/num_samples
     return pressure
 
 # Digital inputs
 def digital_output(device_name, channel, io):
+    """
+    Writes a digital output signal to the specified device and channel.
+
+    Parameters:
+    - device_name (str): The name of the device.
+    - channel (str): The channel to write the signal to.
+    - io (bool): The value to write to the channel.
+
+    Returns:
+    None
+    """
     with nidaqmx.Task() as task:
         task.do_channels.add_do_chan(f"{device_name}/{channel}")
         task.write(io)
 
 # Read serial port
 def serial_read(port):
+    """
+    Reads data from a serial port.
+
+    Args:
+        port (str): The port name or device file of the serial port.
+
+    Raises:
+        PermissionError: If a permission error occurs while accessing the serial port.
+        serial.SerialException: If a serial exception occurs (e.g., device not found).
+        Exception: If any other unexpected error occurs.
+
+    Returns:
+        None
+    """
     ser = None  # Initialize serial object outside the try block
     try:
         ser = serial.Serial(port, 9600)
@@ -60,8 +95,22 @@ def serial_read(port):
         if ser is not None:
             ser.close()  # Close the serial port when the loop exits
 
-# Contrl the air pump with PWM
+# Control the air pump with PWM
 def pwm_airpump(duty_cycle, device_name, channel_pump):
+    """
+    Controls the PWM signal for an air pump.
+
+    Args:
+        duty_cycle (float): The duty cycle of the PWM signal.
+        device_name (str): The name of the device.
+        channel_pump (int): The channel of the pump.
+
+    Raises:
+        Exception: If an error occurs in the thread generation.
+
+    """
+
+
     try:
 
         # Check if the pause event is set
