@@ -1,8 +1,8 @@
 # # Soft Robot data adquisition and capture # #
 # camera.py
 
-# By: Oscar Ochoa 
-# April 2024
+# By: Oscar Ochoa and Enrico Mendez
+# September 2024
 
 import time
 import depthai as dai
@@ -13,6 +13,12 @@ camera_stop_event = threading.Event()
 
 # Initialization sequence
 def init_camera():
+    """
+    Initializes the camera and returns a pipeline object.
+    Returns:
+        pipeline (dai.Pipeline): The pipeline object containing the camera and video encoder nodes.
+    """
+    # Code implementation goes here
     print("Initializing camera" )
 
     # Create pipeline object
@@ -23,6 +29,7 @@ def init_camera():
     xout.setStreamName('h265')
     
     # Initial Settings
+    # Adjust depending on experimental setup and lighting
     camRgb.initialControl.setBrightness(-4)
     camRgb.initialControl.setManualFocus(145)
     camRgb.setBoardSocket(dai.CameraBoardSocket.CAM_A)
@@ -37,6 +44,19 @@ def init_camera():
 
 # Camera frame capture Thread
 def capture_frame(video_file_path, pipeline):
+    """
+    Captures frames from a video stream and saves them to a file.
+
+    Args:
+        video_file_path (str): The path to the video file where frames will be saved.
+        pipeline: The pipeline object used to configure the video stream.
+
+    Raises:
+        Exception: If an error occurs during the frame capture process.
+
+    Returns:
+        None
+    """
     try:
         with dai.Device(pipeline) as device:
             q = device.getOutputQueue(name="h265", maxSize=30, blocking=True)
